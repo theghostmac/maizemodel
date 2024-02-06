@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -153,4 +154,7 @@ for images,labels in test_ds.take(1):
         plt.title(f"Actual: {actual_class},\n Predicted: {predicted_class},\n Confidence Score: {confidence}%")
         plt.axis("off")
 
-model.save('/models/Disease_Classifier')
+model_dir = '/Users/macbobbychibuzor/workspace/internship/maizemodel/models/Disease_Classifier'
+os.makedirs(model_dir, exist_ok=True)  # Creates the directory if it doesn't exist
+
+model.save(model_dir)
