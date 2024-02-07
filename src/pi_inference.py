@@ -12,7 +12,7 @@ camera.resolution = (256, 256) # Match the model's expected output.
 camera.start_preview()
 
 # Allow camera to warm up.
-time.Sleep(2)
+time.sleep(2)
 
 # Capture an image.
 camera.capture('/home/pi/image.jpg')
