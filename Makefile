@@ -1,29 +1,27 @@
-.PHONY: setup venv run clean
+.PHONY: setup venv run clean help
 
 # Configurations
 VENV_NAME ?= venv
 PYTHON = ${VENV_NAME}/bin/python
-PIP = ${VENV_NAME}/bin/pip
+PIP = uv pip
 
 # Default command
 all: setup
 
-# Setup virtual environment
+# Create and activate virtual environment
+venv:
+	@test -d $(VENV_NAME) || uv venv $(VENV_NAME)
+	@echo "Virtual environment created. Activate with: source $(VENV_NAME)/bin/activate"
+
+# Setup virtual environment and install packages
 setup: venv
 	@echo "Installing Python packages..."
-	@${PIP} install -r requirements.txt
-
-# Create virtual environment
-venv: $(VENV_NAME)/bin/activate
-
-$(VENV_NAME)/bin/activate: requirements.txt
-	@test -d $(VENV_NAME) || python3 -m venv $(VENV_NAME)
-	@${PIP} install --upgrade pip setuptools wheel
+	@. $(VENV_NAME)/bin/activate; $(PIP) install -r requirements.txt; deactivate
 
 # Run the main Python script
-run: venv
+run:
 	@echo "Running app..."
-	@${PYTHON} app.py
+	@. $(VENV_NAME)/bin/activate; $(PYTHON) app.py; deactivate
 
 # Clean up the project (remove virtual environment)
 clean:
@@ -32,10 +30,10 @@ clean:
 	@find . -type f -name '*.pyc' -delete
 	@find . -type d -name '__pycache__' -delete
 
-# Help command to display makefile command help
+# Help command to display Makefile command help
 help:
 	@echo "Available commands:"
 	@echo "   make setup        - Setup the project and install dependencies"
-	@echo "   make run          - Run the main application"
-	@echo "   with virtual environment"
+	@echo "   make run          - Run the main application with virtual environment"
 	@echo "   make clean        - Clean the project directory"
+	@echo "   make help         - Display this help message"
