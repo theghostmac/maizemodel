@@ -1,33 +1,64 @@
-import numpy as np
-import tensorflow as tf
+import torch
+import cv2
 from PIL import Image
-import time
+from torchvision import transforms
+from time import sleep
 
-# Load the model
-model_path = '/Users/macbobbychibuzor/workspace/internship/maizemodel/models/Disease_Classifier'
-model = tf.keras.models.load_model(model_path)
+# Load a pre-trained YOLOv5 model
+model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True, trust_repo=True)
+model.eval()
 
-# Simulate image capture by loading an image from disk
-image_path = '/Users/macbobbychibuzor/workspace/internship/maizemodel/src/bligggght.JPG'
+# Initialize the camera
+camera = cv2.VideoCapture(0)
+if not camera.isOpened():
+    print("Error: Camera could not be opened")
+    exit()
 
-# Load and inspect the image
-image = Image.open(image_path)
-print(f"the image is at: {image_path}")
-print(f"Loaded image shape (before resizing): {image.size}")
-image = image.resize((256, 256))  # Resize to match the model's expected input
-image_array = np.array(image)
-print(f"Image shape (after resizing): {image_array.shape}")
-print(f"Image data sample (before normalization): {image_array[0, 0, :]}")
+# Define the transformation: Convert image to tensor
+transform = transforms.Compose([
+    transforms.Resize((640, 480)),  # Resize the image
+    transforms.ToTensor(),  # Converts image data to PyTorch tensor
+])
 
-# Normalize the image
-image = image_array / 255.0
-image = np.expand_dims(image, axis=0)  # Add a batch dimension
+try:
+    while True:
+        ret, frame = camera.read()
+        if not ret:
+            print("Failed to grab frame, retrying...")
+            sleep(0.5)
+            continue
 
-# Predict and inspect model output
-predictions = model.predict(image)
-print(f"Raw model output probabilities: {predictions}")
+        # Convert the image from BGR to RGB
+        rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-predicted_class = np.argmax(predictions)
-confidence = np.max(predictions) * 100
-class_names = ['Blight', 'Common_Rust', 'Gray_Leaf_Spot', 'Healthy']
-print(f"Predicted class: {class_names[predicted_class]}, Confidence: {confidence:.2f}%")
+        # Convert to PIL Image for compatibility with transforms
+        pil_image = Image.fromarray(rgb_image)
+
+        # Apply the transformation to the image
+        input_tensor = transform(pil_image).unsqueeze(0)
+
+        # Perform inference
+        with torch.no_grad():
+            results = model(input_tensor)
+
+        # Check the output format of the results
+        print("Output from the model:", results)
+        print("Type of results:", type(results))
+
+        # Assuming the results are in the expected format, try accessing the first element
+        if hasattr(results, 'xyxy'):
+            for det in results.xyxy[0]:
+                print("Detection:", det)
+        else:
+            print("The results object does not have 'xyxy' attribute.")
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+        sleep(0.1)
+
+except KeyboardInterrupt:
+    print("Stopped by User")
+finally:
+    camera.release()
+    cv2.destroyAllWindows()

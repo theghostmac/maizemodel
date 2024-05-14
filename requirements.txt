@@ -3,3 +3,7 @@ torchvision  # Ensure compatibility with PyTorch version
 opencv-python-headless  # Headless to avoid GUI dependencies on Raspberry Pi
 Pillow  # For image manipulation
 numpy  # Required for numerical operations
+pandas
+requests
+ultralytics
+setuptools
