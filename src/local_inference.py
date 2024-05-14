@@ -8,10 +8,11 @@ model_path = '/Users/macbobbychibuzor/workspace/internship/maizemodel/models/Dis
 model = tf.keras.models.load_model(model_path)
 
 # Simulate image capture by loading an image from disk
-image_path = '/Users/macbobbychibuzor/workspace/internship/maizemodel/src/healthy_test.jpg'
+image_path = '/Users/macbobbychibuzor/workspace/internship/maizemodel/src/bligggght.JPG'
 
 # Load and inspect the image
 image = Image.open(image_path)
+print(f"the image is at: {image_path}")
 print(f"Loaded image shape (before resizing): {image.size}")
 image = image.resize((256, 256))  # Resize to match the model's expected input
 image_array = np.array(image)

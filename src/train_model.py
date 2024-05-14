@@ -94,7 +94,7 @@ model.compile(
 
 history = model.fit(
     train_ds,
-    epochs=30,
+    epochs=10,
     batch_size=BATCH_SIZE,
     verbose=1,
     validation_data=val_ds)

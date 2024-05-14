@@ -4,13 +4,18 @@ Building the model for our maize disease detection project.
 
 Transfer the entire `Disease_Classifier` directory to Raspberry Pi. Also push the `app.py`, `index.html`, and `pi_inference.py` there.
 
-`assets:` This directory may contain assets that the model uses, such as vocabulary files. 
-It might be empty, but it's part of the SavedModel structure.
-`variables:` Contains the model's weights. The variables.data-00000-of-00001 and variables.index 
-files are critical for your model to have the correct learned parameters.
-`saved_model.pb:` Holds the model architecture.
-`keras_metadata.pb:` Contains metadata of the model, such as training configuration and the architecture.
-`fingerprint.pb:` Used by TensorFlow to ensure the integrity of the model's files and structure.
+## Explanation of the Makefile:
+
+`setup`: Sets up the virtual environment and installs all dependencies listed in a requirements.txt file. You'll need to create this file listing all required packages.
+`venv`: Creates the virtual environment.
+`run`: Activates the virtual environment and runs the main Python script app.py.
+`clean`: Cleans up the project by removing the virtual environment and any compiled Python files.
+`help`: Provides a list of available commands in the Makefile.
+Usage:
+
+To setup the project, just run `make setup`.
+To run the application, use `make run`.
+To clean up the project, use `make clean`.
 
 Copy the model:
 ```shell
