@@ -7,3 +7,4 @@ pandas
 requests
 ultralytics
 setuptools
+matplotlib
